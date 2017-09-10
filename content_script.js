@@ -58,7 +58,7 @@ setTimeout(function() {
     var port = chrome.runtime.connect({name: portName})
     port.postMessage({command: "close"})
   }
-}, 5000)
+}, 3000)
 
 
 if (url.indexOf("ecppdown.cnki.net/cjfdsearch/pdfdownloadnew.asp") != -1) {
