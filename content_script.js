@@ -60,6 +60,15 @@ setTimeout(function() {
   }
 }, 3000)
 
+// close the page if it hasn't been closed in 90 seconds, so we do not clog chrome
+setTimeout(function() {
+  console.log("Close too long lived page")
+  var portName = "downloadurl"
+  var port = chrome.runtime.connect({name: portName})
+  port.postMessage({command: "close"})
+}, 90000)
+
+
 
 if (url.indexOf("ecppdown.cnki.net/cjfdsearch/pdfdownloadnew.asp") != -1) {
   var portName = "downloadurl"
