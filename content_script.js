@@ -123,7 +123,7 @@ if (url.indexOf('www.cnki.net/KCMS/detail/') !== -1) {
       url: url,
     })
     queryTimes ++
-    if (queryTimes > 3) {
+    if (queryTimes > 2) {
       // do not try too many times
       clearInterval(checkIfDownloaded)
     }
