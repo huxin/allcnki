@@ -36,7 +36,7 @@ var get_paper_year = function () {
   console.log("Year cnt is: ", year_cnt)
 
   var major_year_cnt = -1
-
+  var major_year = -1
   for (key in year_cnt) {
     if (year_cnt[key] > major_year_cnt) {
       major_year = key
@@ -47,6 +47,18 @@ var get_paper_year = function () {
 }
 
 
+// close if it's in dissertation page
+setTimeout(function() {
+  var whole = document.getElementsByClassName('whole')
+  var chapter = document.getElementsByClassName('chapter')
+
+  if (whole.length > 0 && chapter.length > 0) {
+    console.log("Close on dissertation page")
+    var portName = "downloadurl"
+    var port = chrome.runtime.connect({name: portName})
+    port.postMessage({command: "close"})
+  }
+}, 5000)
 
 
 if (url.indexOf("ecppdown.cnki.net/cjfdsearch/pdfdownloadnew.asp") != -1) {
