@@ -52,6 +52,7 @@ var page_to = -1
 var page_to_click = -1
 var search_res_page = -1
 var pageNavPortName = 'pageNav'
+var searchterm='n/a'
 
 var goto_and_start_click = function(tab_id, page_num){
   // send a goto message and then send a click
@@ -116,19 +117,26 @@ var pageNavListener = function(msg, sendingPort) {
       // send back current page information
       if (page_to_click == -1) {
 
-        chrome.storage.local.get({'progress': -2, "year": -3}, function (r2) {
+        chrome.storage.local.get({'progress': -2, "year": -3, 'searchterm': 'n/a'}, function (r2) {
           sendingPort.postMessage({
             command: "updateStatus",
-            status: "dl: " + r2.progress + ' yr: ' + r2.year
+            status: "dl: " + r2.progress + ' yr: ' + r2.year,
+            searchterm: r2.searchterm,
           })
         })
       } else {
         sendingPort.postMessage({
           command: "updateStatus",
-          status: "dl: " + page_to_click + ' yr: ' + year
+          status: "dl: " + page_to_click + ' yr: ' + year,
+          searchterm: searchterm
         })
       }
-
+    } else if (msg.command == 'searchterm') {
+      // save search term
+      searchterm = msg.searchterm
+      chrome.storage.local.set({
+        'searchterm': msg.searchterm
+      })
     }
 
 }

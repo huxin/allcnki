@@ -11,8 +11,35 @@
 
 document.addEventListener("DOMContentLoaded", documentEvents, false)
 
+var send_search_command = function (type) {
+  var field = document.getElementById('field').value
+  var keyword = document.getElementById('keyword').value
 
-function documentEvents() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      console.log("send to active tab: " + field + " " + keyword);
+      chrome.tabs.sendMessage(tabs[0].id, {
+        command: "search",
+        field: field,
+        keyword: keyword,
+        type: type})
+  })
+}
+
+function documentEvents () {
+  document.getElementById('new_search').addEventListener('click', function() {
+    // search new results
+    send_search_command('new_search')
+  })
+
+  document.getElementById('in_result').addEventListener('click', function() {
+    // search in old results
+    // send search command with field selection
+    send_search_command('in_result')
+  })
+
+
+
+
   document.getElementById('ok_btn').addEventListener('click', function(){
       // read names
       var name = document.getElementById("name").value
@@ -56,6 +83,7 @@ function documentEvents() {
     console.log("pageNavePort receive msg: " + JSON.stringify(msg))
     if (msg.command == "updateStatus") {
       document.getElementById('status').textContent = msg.status
+      document.getElementById('searchterm').textContent = msg.searchterm
     }
 
   })

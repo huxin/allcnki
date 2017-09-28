@@ -9,7 +9,20 @@ console.log("Running persistently content_script")
 //   console.log("dom finished")
 // })
 
-url = document.URL
+var url = document.URL
+var pageNavPortName = 'pageNav'
+var pageNavPort =  chrome.runtime.connect({name: pageNavPortName})
+
+var saveSearchTerm = function() {
+  var search_term = $('#SearchHisTip').text()
+  if (search_term != null && search_term.length > 0) {
+    console.log("Send search term: " + search_term)
+    pageNavPort.postMessage({
+      command: "searchterm",
+      search_term: search_term,
+    })
+  }
+}
 
 
 var get_paper_year = function () {
@@ -199,7 +212,26 @@ chrome.runtime.onMessage.addListener(
         }, 2000)
       }
 
+    } else if (command == 'search') {
+      // search
+      var index = parseInt(request.field)
+      var keyword = request.keyword
+      var type = request.type
+      document.getElementById('txt_1_sel').selectedIndex = index
+      document.getElementById('txt_1_value1').value = keyword
+
+      if (type == 'new_search') {
+        document.getElementById('btnSearch').click()
+      } else {
+        // search in results
+        document.getElementById('divresult').click()
+      }
+
+      setTimeout(saveSearchTerm(), 1000)
+
     } else if (command == "click") {
+      saveSearchTerm()
+
       var year = request.year
       console.log("Receive click command and year is: " + year)
 
@@ -284,8 +316,7 @@ var getCurrentPage = function() {
   return currentPage
 }
 
-var pageNavPortName = 'pageNav'
-var pageNavPort =  chrome.runtime.connect({name: pageNavPortName})
+
 
 
 // try to click link one by one
@@ -311,6 +342,7 @@ var click_paper = setInterval(function() {
   console.log("Click " + click_idx + " link")
   click_idx ++
   link.click()
+
 }, 18000)
 
 
