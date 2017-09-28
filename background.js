@@ -118,6 +118,7 @@ var pageNavListener = function(msg, sendingPort) {
       if (page_to_click == -1) {
 
         chrome.storage.local.get({'progress': -2, "year": -3, 'searchterm': 'n/a'}, function (r2) {
+          console.log("Report back search term from local store: " + r2.searchterm)
           sendingPort.postMessage({
             command: "updateStatus",
             status: "dl: " + r2.progress + ' yr: ' + r2.year,
@@ -125,6 +126,7 @@ var pageNavListener = function(msg, sendingPort) {
           })
         })
       } else {
+        console.log("Report back search term from variable: " + searchterm)
         sendingPort.postMessage({
           command: "updateStatus",
           status: "dl: " + page_to_click + ' yr: ' + year,
@@ -133,9 +135,10 @@ var pageNavListener = function(msg, sendingPort) {
       }
     } else if (msg.command == 'searchterm') {
       // save search term
-      searchterm = msg.searchterm
+      searchterm = msg.search_term
+      console.log("Receive and save search term: " + searchterm)
       chrome.storage.local.set({
-        'searchterm': msg.searchterm
+        'searchterm': searchterm
       })
     }
 

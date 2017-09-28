@@ -214,20 +214,34 @@ chrome.runtime.onMessage.addListener(
 
     } else if (command == 'search') {
       // search
-      var index = parseInt(request.field)
+      var field = request.field
       var keyword = request.keyword
       var type = request.type
-      document.getElementById('txt_1_sel').selectedIndex = index
-      document.getElementById('txt_1_value1').value = keyword
-
-      if (type == 'new_search') {
-        document.getElementById('btnSearch').click()
-      } else {
-        // search in results
-        document.getElementById('divresult').click()
+      var found = -1
+      var e = document.getElementById('txt_1_sel')
+      for (var index = 0; index < 10; index ++ ) {
+        var optionValue = e.options[index].textContent
+        if (optionValue === field) {
+          console.log("Found field " + field + " at index: " + index)
+          found = index
+          break
+        }
       }
+      if (found === -1) {
+        prompt('Cannot find field: ' + field)
+      } else {
+        document.getElementById('txt_1_sel').selectedIndex = found
+        document.getElementById('txt_1_value1').value = keyword
 
-      setTimeout(saveSearchTerm(), 1000)
+        if (type === 'new_search') {
+          document.getElementById('btnSearch').click()
+        } else {
+          // search in results
+          document.getElementById('divresult').click()
+        }
+
+        setTimeout(saveSearchTerm(), 1000)
+    } // end found == -1
 
     } else if (command == "click") {
       saveSearchTerm()
