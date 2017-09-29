@@ -70,7 +70,12 @@ function documentEvents () {
     // send data to the content_script for filling the search information
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         console.log("send click command to active tab");
-        var year = parseInt(document.getElementById("year").value)
+        var year_str = document.getElementById("year").value
+        var year = '*'
+
+        if (year_str != '*') {
+          year = parseInt(year_str)
+        }
         chrome.tabs.sendMessage(tabs[0].id, {command: "click", year: year})
     });
   }) // end click_btn

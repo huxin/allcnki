@@ -181,6 +181,7 @@ if (url.indexOf('www.cnki.net/KCMS/detail/') !== -1) {
 
 
 var paper_links = []
+var paper_types = []
 var click_idx = 0
 
 chrome.runtime.onMessage.addListener(
@@ -265,6 +266,17 @@ chrome.runtime.onMessage.addListener(
       var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
 
       paper_links = innerDoc.querySelectorAll(".fz14")
+      paper_types = []
+
+      var paper_type_fields = innerDoc.querySelectorAll('#ctl00 > table > tbody > tr:nth-child(2) > td > table > tbody > tr > td:nth-child(6)')
+      if (paper_type_fields.length == 51) {
+          for (var i = 1; i < 51; i ++) {
+            paper_types.push($.trim(paper_type_fields[i].textContent))
+          }
+          console.log("found paper type: " + paper_types)
+      }
+
+
       click_idx = 0
       console.log("Receiving click command, found " + paper_links.length + " links click_idx: " + click_idx )
     } else if (command == "clear") {
@@ -344,6 +356,7 @@ var click_paper = setInterval(function() {
     console.log("finished click everything stop, send curPage to plugin: " + curPage)
     click_idx = 0
     paper_links = []
+    paper_types = []
     // send finish signal to background
     pageNavPort.postMessage({
       command: "finish",
@@ -352,10 +365,26 @@ var click_paper = setInterval(function() {
 
     return
   }
-  link = paper_links[click_idx]
-  console.log("Click " + click_idx + " link")
-  click_idx ++
-  link.click()
+
+
+  while (click_idx < paper_links.length) {
+    var link = paper_links[click_idx]
+    var skip = false
+    if (paper_types.length == paper_links.length) {
+      if (paper_types[click_idx] === '硕士' || paper_types[click_idx] === '博士') {
+        console.log(click_idx+1 + "th paper type is: " + paper_types[click_idx] + " skip")
+        skip = true
+      }
+    }
+
+    click_idx ++
+    if (!skip) {
+        console.log("Click " + click_idx + " link")
+        link.click()
+        break
+    }
+  }
+
 
 }, 18000)
 
