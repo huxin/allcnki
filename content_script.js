@@ -15,7 +15,7 @@ var interval_click_link = 18000 // time between clicking two links
 
 var url = document.URL
 var pageNavPortName = 'pageNav'
-var pageNavPort =  chrome.runtime.connect({na me: pageNavPortName})
+var pageNavPort =  chrome.runtime.connect({name: pageNavPortName})
 
 var saveSearchTerm = function() {
   var search_term = $('#SearchHisTip').text()
