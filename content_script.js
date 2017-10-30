@@ -9,9 +9,13 @@ console.log("Running persistently content_script")
 //   console.log("dom finished")
 // })
 
+var interval_check_link_exist = 5000 // will be cleared once found
+var interval_query_pdf_downloaded = 10000 // in downloading page, query if pdf link has already been downloaded
+var interval_click_link = 18000 // time between clicking two links
+
 var url = document.URL
 var pageNavPortName = 'pageNav'
-var pageNavPort =  chrome.runtime.connect({name: pageNavPortName})
+var pageNavPort =  chrome.runtime.connect({na me: pageNavPortName})
 
 var saveSearchTerm = function() {
   var search_term = $('#SearchHisTip').text()
@@ -106,17 +110,8 @@ var disablerFunction = function () {
 
 };
 
-setInterval(function(){
-  var disablerCode = "(" + disablerFunction.toString() + ")();";
-  var disablerScriptElement = document.createElement('script');
-  disablerScriptElement.textContent = disablerCode;
 
-  document.documentElement.appendChild(disablerScriptElement);
-  disablerScriptElement.parentNode.removeChild(disablerScriptElement);
-}, 500)
-
-
-if (url.indexOf('www.cnki.net/KCMS/detail/') !== -1) {
+if (url.indexOf('/KCMS/detail/') !== -1) {
   console.log("In pdf page, prepare to download")
 
   var pdfdownloadlink = null
@@ -155,8 +150,8 @@ if (url.indexOf('www.cnki.net/KCMS/detail/') !== -1) {
 
     // checking if pdf has been downloaded
     queryPDFDownloaded()
-    checkIfDownloaded = setInterval(queryPDFDownloaded, 10000)
-  }, 5000)
+    checkIfDownloaded = setInterval(queryPDFDownloaded, interval_query_pdf_downloaded)
+  }, interval_check_link_exist)
 
 
 
@@ -386,7 +381,7 @@ var click_paper = setInterval(function() {
   }
 
 
-}, 18000)
+}, interval_click_link)
 
 
 
